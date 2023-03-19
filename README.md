@@ -1,4 +1,4 @@
-Modified version of the project from:
+Modified version of a project from:
 
 https://www.oreilly.com/library/view/programming-rust-2nd/9781492052586/
 
