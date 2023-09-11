@@ -1,5 +1,4 @@
 use std::path::PathBuf;
-use image::ImageFormat::PNG;
 use num::Complex;
 use clap::{Parser, ValueEnum};
 use image::ColorType;
@@ -46,6 +45,10 @@ impl Limit{
 
 fn main() {
     let args = Args::parse();
+    let mut pixels = vec![0; args.width * args.height];
+    render(&mut pixels, (args.width, args.height), args.upper_left, args.lower_right, args.limit);
+    let _ = write_image(args.file.to_str().unwrap_or("default"), &mut pixels, (args.width, args.height));
+
 }
 
 fn render(pixels: &mut [u8], bounds: (usize, usize), upper_left: Complex<f64>, lower_right: Complex<f64>, limit: Limit){
