@@ -92,7 +92,7 @@ fn pixel_to_point(bounds: (usize, usize), pixel: (usize, usize), upper_left: Com
                                 upper_left.im - lower_right.im);
     Complex {
         re: upper_left.re + pixel.0 as f64 * width / bounds.0 as f64,
-        im: upper_left.im - pixel.1 as f64 * width / bounds.1 as f64
+        im: upper_left.im - pixel.1 as f64 * height / bounds.1 as f64
     }
 }
 
