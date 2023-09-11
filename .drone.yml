@@ -1,11 +1,17 @@
 kind: pipeline
-name: build
+name: build & test
 
 platform:
   arch: amd64
 
 steps:
 - name: build
-  image: rust:1.66
+  image: rust:1.72
   commands:
   - cargo build --verbose --all
+
+steps:
+- name: test
+  image: rust:1.72
+  commands:
+  - cargo test --verbose
