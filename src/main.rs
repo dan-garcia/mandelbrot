@@ -44,9 +44,18 @@ fn main() {
     let args = Args::parse();
 }
 
-fn render(pixels: &mut [u8], bounds: (usize, usize), upper_left: Complex<f64>, lower_right: Complex<f64>){
+fn render(pixels: &mut [u8], bounds: (usize, usize), upper_left: Complex<f64>, lower_right: Complex<f64>, limit: Limit){
     assert!(pixels.len() == bounds.0 * bounds.1);
-    
+    for row in 0..bounds.1 {
+        for col in 0..bounds.0 {
+            let point = pixel_to_point(bounds, (col, row), upper_left, lower_right);
+            pixels[row * bounds.0 + col] = 
+                match escape_time(point, limit){
+                    None => 0,
+                    Some(count) => (limit.value() - count)  as u8
+                };
+        }
+    }
 }
 
 fn write_image(filename: &str, pixels: &[u8], bounds: (usize, usize)) -> Result<(), std::io::Error>{
