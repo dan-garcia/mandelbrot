@@ -9,3 +9,4 @@ edition = "2021"
 num = "0.4"
 clap = { version = "4.1.*", features = ["derive"] }
 image = "0.13.*"
+crossbeam = "0.8.*"
