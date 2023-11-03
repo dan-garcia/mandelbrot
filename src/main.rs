@@ -36,6 +36,7 @@ struct Args {
 }
 #[derive(Debug, Clone, Copy, ValueEnum)]
 enum Limit {
+    VeryLow,
     Low,
     Medium,
     High
@@ -44,6 +45,7 @@ enum Limit {
 impl Limit{
     fn value(&self) -> usize {
         match *self {
+            Limit::VeryLow =>128,
             Limit::Low => 256,
             Limit::Medium => 512,
             Limit::High => 1024
