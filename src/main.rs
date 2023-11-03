@@ -5,8 +5,8 @@ use image::ColorType;
 use image::png::PNGEncoder;
 use std::fs::File;
 
-#[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
+#[derive(Parser)]
+#[command(author, version, about, long_about = None, allow_hyphen_values(true))]
 struct Args {
     #[arg(short = 'F', long)]
     file: PathBuf,
@@ -17,13 +17,21 @@ struct Args {
     #[arg(short = 'H', long)]
     height: usize,
 
+    //FIXME: having to use re and im parts as 
+    //      workaround getting clap to parse complex nums
     #[arg(short = 'L', long)]
-    upper_left: Complex<f64>,
-
-    #[arg(short = 'R', long)]
-    lower_right: Complex<f64>,
+    upper_left_re: f64,
 
     #[arg(short = 'l', long)]
+    upper_left_im: f64,
+
+    #[arg(short = 'R', long)]
+    lower_right_re: f64,
+
+    #[arg(short = 'r', long)]
+    lower_right_im: f64,
+
+    #[arg(short = 'x', long)]
     limit: Limit,
 }
 #[derive(Debug, Clone, Copy, ValueEnum)]
@@ -46,7 +54,11 @@ impl Limit{
 fn main() {
     let args = Args::parse();
     let mut pixels = vec![0; args.width * args.height];
-    render(&mut pixels, (args.width, args.height), args.upper_left, args.lower_right, args.limit);
+    render(&mut pixels,
+            (args.width, args.height),
+            Complex {re: args.upper_left_re, im: args.upper_left_im},
+            Complex {re: args.lower_right_re, im: args.lower_right_im},
+            args.limit);
     let _ = write_image(args.file.to_str().unwrap_or("default"), &mut pixels, (args.width, args.height));
 
 }
