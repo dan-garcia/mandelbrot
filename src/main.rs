@@ -33,6 +33,9 @@ struct Args {
 
     #[arg(short = 'x', long)]
     limit: Limit,
+
+    #[arg(short = 't', long)]
+    threads : u8
 }
 #[derive(Debug, Clone, Copy, ValueEnum)]
 enum Limit {
@@ -55,12 +58,33 @@ impl Limit{
 
 fn main() {
     let args = Args::parse();
+    let bounds = (args.width, args.height);
+    let upper_left = Complex {re: args.upper_left_re, im: args.upper_left_im};
+    let lower_right = Complex {re: args.lower_right_re, im: args.lower_right_im};
+
+
     let mut pixels = vec![0; args.width * args.height];
-    render(&mut pixels,
-            (args.width, args.height),
-            Complex {re: args.upper_left_re, im: args.upper_left_im},
-            Complex {re: args.lower_right_re, im: args.lower_right_im},
-            args.limit);
+    if args.threads == 1 {
+        render(&mut pixels, bounds, upper_left, lower_right, args.limit);
+    } else if args.threads > 1{
+        let rows_per_band = args.height / (args.threads as usize) + 1;
+        let bands : Vec<&mut [u8]> = pixels.chunks_mut(rows_per_band * args.width).collect();
+        crossbeam::scope(|spawner| {
+            for (i, band) in bands.into_iter().enumerate() {
+                let top = rows_per_band * i;
+                let height = band.len() / args.width;
+                let band_bounds = (args.width, height);
+                let band_upper_left = pixel_to_point(bounds, (0, top), upper_left, lower_right);
+                let band_lower_right = pixel_to_point(bounds, (args.width, top + height), upper_left, lower_right);
+                spawner.spawn(move |_| {
+                    render(band, band_bounds, band_upper_left, band_lower_right, args.limit);
+                });
+            }
+        }).unwrap();
+    } else {
+        panic!("Please enter a valid value for # of threads")
+    }
+    
     let _ = write_image(args.file.to_str().unwrap_or("default"), &mut pixels, (args.width, args.height));
 
 }
