@@ -9,5 +9,5 @@ edition = "2021"
 [dependencies]
 num = "0.4"
 clap = { version = "4.1.*", features = ["derive"] }
-image = "0.13.*"
+image = "0.23.*"
 crossbeam = "0.8.*"
