@@ -48,7 +48,7 @@ enum Limit {
 impl Limit{
     fn value(&self) -> usize {
         match *self {
-            Limit::VeryLow =>128,
+            Limit::VeryLow => 128,
             Limit::Low => 256,
             Limit::Medium => 512,
             Limit::High => 1024
@@ -85,7 +85,7 @@ fn main() {
         panic!("Please enter a valid value for # of threads")
     }
     
-    let _ = write_image(args.file.to_str().unwrap_or("default"), &mut pixels, (args.width, args.height));
+    let _ = write_image(args.file.to_str().unwrap_or("default"), &pixels, (args.width, args.height));
 
 }
 
