@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 use num::Complex;
 use clap::{Parser, ValueEnum};
-use image::ColorType;
-use image::png::PNGEncoder;
+use image::{ColorType, ImageEncoder};
+use image::codecs::png::PngEncoder;
 use std::fs::File;
 
 #[derive(Parser)]
@@ -105,8 +105,11 @@ fn render(pixels: &mut [u8], bounds: (usize, usize), upper_left: Complex<f64>, l
 
 fn write_image(filename: &str, pixels: &[u8], bounds: (usize, usize)) -> Result<(), std::io::Error>{
     let output = File::create(filename)?;
-    let encoder = PNGEncoder::new(output);
-    encoder.encode(pixels, bounds.0 as u32, bounds.1 as u32, ColorType::Gray(8))?;
+    let encoder = PngEncoder::new(output);
+    match encoder.write_image(pixels, bounds.0 as u32, bounds.1 as u32, ColorType::L8){
+        Ok(()) => (),
+        Err(e) => panic!("oops, {}", e)
+    }
 
     Ok(())
 }
